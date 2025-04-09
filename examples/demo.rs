@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use atomic_timer::AtomicTimer;
 use egui::{vec2, CentralPanel, Color32, Slider, Visuals};
-use hmic::{Bar, Gauge, ToggleStyle, ToggleSwitch};
+use ehmi::{Bar, Gauge, ToggleStyle, ToggleSwitch};
 
 const DANGER: Color32 = Color32::RED;
 
@@ -199,7 +199,7 @@ impl eframe::App for MyApp {
 
 fn main() -> Result<(), eframe::Error> {
     eframe::run_native(
-        "hmic",
+        "ehmi",
         eframe::NativeOptions::default(),
         Box::new(|cc| Ok(Box::new(MyApp::new(cc)))),
     )
