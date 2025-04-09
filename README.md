@@ -1,7 +1,7 @@
 <h2>
     eHMI - HMI components for egui
-  <a href="https://crates.io/crates/ehmi"><img alt="crates.io page" src="https://img.shields.io/crates/v/rmodbus.svg"></img></a>
-  <a href="https://docs.rs/ehmi"><img alt="docs.rs page" src="https://docs.rs/rmodbus/badge.svg"></img></a>
+  <a href="https://crates.io/crates/ehmi"><img alt="crates.io page" src="https://img.shields.io/crates/v/ehmi.svg"></img></a>
+  <a href="https://docs.rs/ehmi"><img alt="docs.rs page" src="https://docs.rs/ehmi/badge.svg"></img></a>
   <a href="https://github.com/roboplc/ehmi/actions/workflows/ci.yml">
     <img alt="GitHub Actions CI" src="https://github.com/roboplc/ehmi/actions/workflows/ci.yml/badge.svg"></img>
   </a>
