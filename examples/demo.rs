@@ -129,12 +129,12 @@ impl eframe::App for MyApp {
                             }
                             ui.add(
                                 ToggleSwitch::new(&mut self.toggle1)
-                                    .label("Hello eframe")
+                                    .label("Relay")
                                     .style(ToggleStyle::Relay),
                             );
                             ui.add(
                                 ToggleSwitch::new(&mut self.toggle1)
-                                    .label("Hello egui")
+                                    .label("Valve")
                                     .style(ToggleStyle::Valve),
                             );
                         });

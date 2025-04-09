@@ -124,8 +124,8 @@ impl egui::Widget for ToggleSwitch<'_> {
         if ui.is_rect_visible(rect) {
             let stroke_color = if *self.on { SUCCESS } else { WARN };
             let stroke = Stroke::new(1.0, stroke_color);
+            let corner_radius = 4.0;
             if matches!(self.style, ToggleStyle::Relay) {
-                let corner_radius = 4.0;
                 ui.painter()
                     .rect_stroke(rect, corner_radius, stroke, StrokeKind::Inside);
             }
@@ -149,7 +149,6 @@ impl egui::Widget for ToggleSwitch<'_> {
             };
 
             if matches!(self.style, ToggleStyle::Valve) {
-                let corner_radius = 4.0;
                 ui.painter().rect_stroke(
                     rect_with_margin,
                     corner_radius,
@@ -197,9 +196,6 @@ impl egui::Widget for ToggleSwitch<'_> {
                     let circle_left = pos2(node_left - circle_radius, center_y);
                     let circle_right = pos2(node_right + circle_radius, center_y);
 
-                    let switch_left = pos2(node_left, center_y);
-                    let switch_right = pos2(node_right, center_y);
-
                     ui.painter()
                         .circle_stroke(circle_left, circle_radius, stroke);
                     ui.painter()
@@ -213,17 +209,16 @@ impl egui::Widget for ToggleSwitch<'_> {
                         stroke,
                     );
 
-                    if *self.on {
-                        ui.painter()
-                            .line_segment([switch_left, switch_right], stroke);
-                    } else {
-                        let mid = node_left * 0.7 + node_right * 0.3;
-
-                        ui.painter().line_segment(
-                            [pos2(mid, center_y - circle_radius * 2.0), switch_right],
-                            stroke,
-                        );
-                    }
+                    let switch_left = pos2(node_left, center_y);
+                    let switch_right = pos2(node_right, center_y);
+                    let off_angle = 45.0_f32.to_radians();
+                    let t = ui.ctx().animate_bool(response.id, *self.on);
+                    let angle = egui::lerp(off_angle..=0.0, t);
+                    let length = (switch_right - switch_left).length();
+                    let dir = vec2(angle.cos(), angle.sin());
+                    let animated_left = switch_right - dir * length;
+                    ui.painter()
+                        .line_segment([animated_left, switch_right], stroke);
                 }
                 ToggleStyle::Valve => {
                     let center = toggle_rect.center();
@@ -256,8 +251,21 @@ impl egui::Widget for ToggleSwitch<'_> {
                         stroke,
                     ));
 
-                    ui.painter()
-                        .circle(center, radius, ui.visuals().panel_fill, stroke);
+                    let t = ui.ctx().animate_bool_with_time(response.id, *self.on, 3.0);
+
+                    if t > 0.0 && t < 1.0 {
+                        ui.painter()
+                            .circle(center, radius, ui.visuals().panel_fill, Stroke::NONE);
+                        let size = vec2(radius * 2.0, radius * 2.0);
+                        let spinner_rect = egui::Rect::from_center_size(center, size);
+                        let spinner = egui::Spinner::new()
+                            .size(radius * 2.0)
+                            .color(ui.visuals().panel_fill);
+                        spinner.paint_at(ui, spinner_rect);
+                    } else {
+                        ui.painter()
+                            .circle(center, radius, ui.visuals().panel_fill, stroke);
+                    }
 
                     if !*self.on {
                         ui.painter().line_segment(
