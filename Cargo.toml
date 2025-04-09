@@ -7,7 +7,7 @@ license = "Apache-2.0"
 repository = "https://github.com/roboplc/ehmi"
 description = "HMI components for egui"
 readme = "README.md"
-keywords = ["plc", "scada", "automation", "hmi", "egui", "ui"]
+keywords = ["plc", "scada", "hmi", "egui", "ui"]
 
 [dependencies]
 egui = "0.31"
