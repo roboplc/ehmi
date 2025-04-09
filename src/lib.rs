@@ -4,11 +4,7 @@
 mod colors;
 mod components;
 
-/// Horizontal or vertical bar
 pub use components::Bar;
-/// Gauge
 pub use components::Gauge;
-/// Toggle switch style
 pub use components::ToggleStyle;
-/// Toggle switch
 pub use components::ToggleSwitch;
