@@ -1,0 +1,17 @@
+[package]
+name = "ehmi"
+version = "0.31.0"
+edition = "2021"
+authors = ["Serhij S. <div@altertech.com>"]
+license = "Apache-2.0"
+repository = "https://github.com/roboplc/ehmi"
+description = "HMI components for egui"
+readme = "README.md"
+keywords = ["plc", "scada", "automation", "hmi", "egui", "ui"]
+
+[dependencies]
+egui = "0.31"
+eframe = "0.31"
+
+[dev-dependencies]
+atomic-timer = "0.2.2"
