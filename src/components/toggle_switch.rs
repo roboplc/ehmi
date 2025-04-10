@@ -125,9 +125,9 @@ impl egui::Widget for ToggleSwitch<'_> {
             let stroke_color = if *self.on { SUCCESS } else { WARN };
             let stroke = Stroke::new(1.0, stroke_color);
             let corner_radius = 4.0;
+            let painter = ui.painter();
             if matches!(self.style, ToggleStyle::Relay) {
-                ui.painter()
-                    .rect_stroke(rect, corner_radius, stroke, StrokeKind::Inside);
+                painter.rect_stroke(rect, corner_radius, stroke, StrokeKind::Inside);
             }
 
             let toggle_size = if has_user_defined_size && label_size.is_some() {
@@ -149,12 +149,7 @@ impl egui::Widget for ToggleSwitch<'_> {
             };
 
             if matches!(self.style, ToggleStyle::Valve) {
-                ui.painter().rect_stroke(
-                    rect_with_margin,
-                    corner_radius,
-                    stroke,
-                    StrokeKind::Inside,
-                );
+                painter.rect_stroke(rect_with_margin, corner_radius, stroke, StrokeKind::Inside);
             }
 
             let toggle_rect = rect_with_margin.shrink(inner_margin);
@@ -164,7 +159,7 @@ impl egui::Widget for ToggleSwitch<'_> {
             match self.style {
                 ToggleStyle::Button => {
                     let radius = 0.5 * toggle_rect.height();
-                    ui.painter().rect(
+                    painter.rect(
                         toggle_rect,
                         radius,
                         if *self.on { SUCCESS } else { GRAY },
@@ -176,8 +171,7 @@ impl egui::Widget for ToggleSwitch<'_> {
                         how_on,
                     );
                     let center = pos2(circle_x, toggle_rect.center().y);
-                    ui.painter()
-                        .circle(center, 0.75 * radius, Color32::WHITE, Stroke::NONE);
+                    painter.circle(center, 0.75 * radius, Color32::WHITE, Stroke::NONE);
                 }
                 ToggleStyle::Relay => {
                     let center_y = toggle_rect.center().y;
@@ -185,7 +179,7 @@ impl egui::Widget for ToggleSwitch<'_> {
                     let node_left = toggle_rect.left() + toggle_rect.width() / 3.0;
                     let node_right = toggle_rect.right() - toggle_rect.width() / 3.0;
 
-                    ui.painter().line_segment(
+                    painter.line_segment(
                         [
                             pos2(toggle_rect.left(), center_y),
                             pos2(node_left - circle_radius * 2.0, center_y),
@@ -196,12 +190,10 @@ impl egui::Widget for ToggleSwitch<'_> {
                     let circle_left = pos2(node_left - circle_radius, center_y);
                     let circle_right = pos2(node_right + circle_radius, center_y);
 
-                    ui.painter()
-                        .circle_stroke(circle_left, circle_radius, stroke);
-                    ui.painter()
-                        .circle_stroke(circle_right, circle_radius, stroke);
+                    painter.circle_stroke(circle_left, circle_radius, stroke);
+                    painter.circle_stroke(circle_right, circle_radius, stroke);
 
-                    ui.painter().line_segment(
+                    painter.line_segment(
                         [
                             pos2(toggle_rect.right(), center_y),
                             pos2(node_right + circle_radius * 2.0, center_y),
@@ -217,8 +209,7 @@ impl egui::Widget for ToggleSwitch<'_> {
                     let length = (switch_right - switch_left).length();
                     let dir = vec2(angle.cos(), angle.sin());
                     let animated_left = switch_right - dir * length;
-                    ui.painter()
-                        .line_segment([animated_left, switch_right], stroke);
+                    painter.line_segment([animated_left, switch_right], stroke);
                 }
                 ToggleStyle::Valve => {
                     let center = toggle_rect.center();
@@ -227,7 +218,7 @@ impl egui::Widget for ToggleSwitch<'_> {
                     let valve_height = valve_width;
 
                     let top_y = center.y - radius * 2.0;
-                    ui.painter().line_segment(
+                    painter.line_segment(
                         [
                             pos2(center.x - radius, top_y),
                             pos2(center.x + radius, top_y),
@@ -235,12 +226,12 @@ impl egui::Widget for ToggleSwitch<'_> {
                         stroke,
                     );
 
-                    ui.painter().line_segment(
+                    painter.line_segment(
                         [pos2(center.x, top_y), pos2(center.x, top_y + radius)],
                         stroke,
                     );
 
-                    ui.painter().add(egui::Shape::line(
+                    painter.add(egui::Shape::line(
                         vec![
                             pos2(center.x - valve_width / 2.0, center.y - valve_height / 4.0),
                             pos2(center.x - valve_width / 2.0, center.y + valve_height / 4.0),
@@ -254,8 +245,7 @@ impl egui::Widget for ToggleSwitch<'_> {
                     let t = ui.ctx().animate_bool_with_time(response.id, *self.on, 3.0);
 
                     if t > 0.0 && t < 1.0 {
-                        ui.painter()
-                            .circle(center, radius, ui.visuals().panel_fill, Stroke::NONE);
+                        painter.circle(center, radius, ui.visuals().panel_fill, Stroke::NONE);
                         let size = vec2(radius * 2.0, radius * 2.0);
                         let spinner_rect = egui::Rect::from_center_size(center, size);
                         let spinner = egui::Spinner::new()
@@ -263,12 +253,11 @@ impl egui::Widget for ToggleSwitch<'_> {
                             .color(ui.visuals().panel_fill);
                         spinner.paint_at(ui, spinner_rect);
                     } else {
-                        ui.painter()
-                            .circle(center, radius, ui.visuals().panel_fill, stroke);
+                        painter.circle(center, radius, ui.visuals().panel_fill, stroke);
                     }
 
                     if !*self.on {
-                        ui.painter().line_segment(
+                        painter.line_segment(
                             [
                                 pos2(center.x - valve_width / 2.0, center.y + valve_height / 4.0),
                                 pos2(center.x + valve_width / 2.0, center.y - valve_height / 4.0),
@@ -293,7 +282,7 @@ impl egui::Widget for ToggleSwitch<'_> {
                 } else {
                     Align2::LEFT_CENTER
                 };
-                ui.painter().text(
+                painter.text(
                     label_pos,
                     anchor,
                     label,

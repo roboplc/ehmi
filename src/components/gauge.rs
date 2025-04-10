@@ -3,7 +3,7 @@ use egui::{
     Ui,
 };
 
-use crate::colors::{get_text_color, GRAY, GRAY_DARK, GRAY_LIGHT, SUCCESS};
+use crate::colors::{get_text_color, GRAY, GRAY_DARK, SUCCESS};
 use core::fmt;
 use std::f32::consts::PI;
 use std::ops::RangeInclusive;
@@ -151,10 +151,8 @@ impl Gauge {
 
         let bg_color = if let Some(c) = self.bg_color {
             c
-        } else if ui.visuals().dark_mode {
-            GRAY_DARK
         } else {
-            GRAY_LIGHT
+            ui.style().visuals.clone().extreme_bg_color
         };
 
         self.paint_arc(ui, rect, min_angle, max_angle, bg_color);

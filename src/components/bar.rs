@@ -3,7 +3,7 @@ use std::ops::RangeInclusive;
 
 use egui::{vec2, Align2, Color32, FontId, Pos2, Rect, Response, RichText, Stroke, Ui, Vec2};
 
-use crate::colors::{get_text_color, GRAY, GRAY_DARK, GRAY_LIGHT, SUCCESS};
+use crate::colors::{get_text_color, GRAY, GRAY_DARK, SUCCESS};
 
 /// Horizontal or vertical bar component
 pub struct Bar {
@@ -69,14 +69,14 @@ impl Bar {
     }
 
     /// Sets the bar size (width for horizontal, height for vertical)
-    pub fn bar_size(mut self, bar_height: f32) -> Self {
-        self.bar_size = bar_height;
+    pub fn bar_size(mut self, size: f32) -> Self {
+        self.bar_size = size;
         self
     }
 
     /// Sets the bar foreground color
-    pub fn fg_color(mut self, fg_color: Color32) -> Self {
-        self.fg_color = fg_color;
+    pub fn fg_color(mut self, color: Color32) -> Self {
+        self.fg_color = color;
         self
     }
 
@@ -99,11 +99,7 @@ impl Bar {
                 Vec2::new(self.bar_size, HEIGHT),
             );
 
-            let bg_color = if ui.visuals().dark_mode {
-                GRAY_DARK
-            } else {
-                GRAY_LIGHT
-            };
+            let bg_color = ui.style().visuals.clone().extreme_bg_color;
 
             painter.rect(
                 therm_rect,
