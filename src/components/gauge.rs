@@ -107,7 +107,11 @@ impl Gauge {
     }
 
     fn gauge_width(&self) -> f32 {
-        self.size - self.text_clearance() * 2.0
+        if self.ticks > 1 {
+            self.size - self.text_clearance() * 2.0
+        } else {
+            self.size
+        }
     }
 
     /// Set the stroke width of the gauge arc
@@ -142,8 +146,11 @@ impl Gauge {
     }
 
     fn paint(&mut self, ui: &mut Ui, outer_rect: Rect, value: f64) {
-        let padding = self.text_clearance();
-        let rect = outer_rect.shrink(padding);
+        let rect = if self.ticks > 1 {
+            outer_rect.shrink(self.text_clearance())
+        } else {
+            outer_rect
+        };
 
         let min_angle = *self.angle_range.start();
         let max_angle = *self.angle_range.end();
