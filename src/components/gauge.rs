@@ -3,7 +3,7 @@ use egui::{
     Ui,
 };
 
-use crate::colors::{get_text_color, GRAY, GRAY_DARK, GRAY_LIGHT, SUCCESS};
+use crate::colors::{get_text_color, GRAY, GRAY_DARK, SUCCESS};
 use core::fmt;
 use std::f32::consts::PI;
 use std::ops::RangeInclusive;
@@ -107,7 +107,11 @@ impl Gauge {
     }
 
     fn gauge_width(&self) -> f32 {
-        self.size - self.text_clearance() * 2.0
+        if self.ticks > 1 {
+            self.size - self.text_clearance() * 2.0
+        } else {
+            self.size
+        }
     }
 
     /// Set the stroke width of the gauge arc
@@ -142,8 +146,11 @@ impl Gauge {
     }
 
     fn paint(&mut self, ui: &mut Ui, outer_rect: Rect, value: f64) {
-        let padding = self.text_clearance();
-        let rect = outer_rect.shrink(padding);
+        let rect = if self.ticks > 1 {
+            outer_rect.shrink(self.text_clearance())
+        } else {
+            outer_rect
+        };
 
         let min_angle = *self.angle_range.start();
         let max_angle = *self.angle_range.end();
@@ -151,10 +158,8 @@ impl Gauge {
 
         let bg_color = if let Some(c) = self.bg_color {
             c
-        } else if ui.visuals().dark_mode {
-            GRAY_DARK
         } else {
-            GRAY_LIGHT
+            ui.style().visuals.clone().extreme_bg_color
         };
 
         self.paint_arc(ui, rect, min_angle, max_angle, bg_color);

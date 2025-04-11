@@ -129,12 +129,12 @@ impl eframe::App for MyApp {
                             }
                             ui.add(
                                 ToggleSwitch::new(&mut self.toggle1)
-                                    .label("Hello eframe")
+                                    .label("Relay")
                                     .style(ToggleStyle::Relay),
                             );
                             ui.add(
                                 ToggleSwitch::new(&mut self.toggle1)
-                                    .label("Hello egui")
+                                    .label("Valve")
                                     .style(ToggleStyle::Valve),
                             );
                         });
@@ -179,7 +179,7 @@ impl eframe::App for MyApp {
                 ui.separator();
                 let mut gauge = Gauge::new(value)
                     .range(10.0..=80.0)
-                    .size(200.0)
+                    .size(160.0)
                     .text(format!("modern {:>6.1}", value))
                     .ticks(0)
                     .arrow_length_factor(0.)
