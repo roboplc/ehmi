@@ -1,7 +1,7 @@
 use core::fmt;
 use std::ops::RangeInclusive;
 
-use egui::{vec2, Align2, Color32, FontId, Pos2, Rect, Response, RichText, Stroke, Ui, Vec2};
+use egui::{pos2, vec2, Align2, Color32, FontId, Rect, Response, RichText, Stroke, Ui};
 
 use crate::colors::{get_text_color, GRAY, GRAY_DARK, SUCCESS};
 
@@ -16,6 +16,7 @@ pub struct Bar {
     min: f32,
     max: f32,
     vertical: Option<f32>,
+    ticks: usize,
 }
 
 impl Bar {
@@ -34,6 +35,7 @@ impl Bar {
             min: 0.0,
             max: 100.0,
             vertical: None,
+            ticks: 5,
         }
     }
 
@@ -80,6 +82,12 @@ impl Bar {
         self
     }
 
+    /// Set the number of the ticks, number below 2 disables the ticks
+    pub fn ticks(mut self, n: usize) -> Self {
+        self.ticks = n;
+        self
+    }
+
     fn vertical_ui(self, ui: &mut Ui, vertical_size: f32, value: f32) -> Response {
         const HEIGHT: f32 = 240.0;
         const VALUE_OFFSET: f32 = 16.0;
@@ -89,35 +97,31 @@ impl Bar {
         let total_height = HEIGHT + (LABEL_MARGIN + self.label_size) * 2.0;
 
         let (rect, response) =
-            ui.allocate_exact_size(Vec2::new(total_width, total_height), egui::Sense::hover());
+            ui.allocate_exact_size(vec2(total_width, total_height), egui::Sense::hover());
 
         if ui.is_rect_visible(rect) {
             let painter = ui.painter();
-            let therm_top = rect.min.y + self.label_size + LABEL_MARGIN;
-            let therm_rect = Rect::from_min_size(
-                Pos2::new(rect.min.x, therm_top),
-                Vec2::new(self.bar_size, HEIGHT),
-            );
-
-            let bg_color = ui.style().visuals.clone().extreme_bg_color;
+            let bar_top = rect.min.y + self.label_size + LABEL_MARGIN;
+            let bar_rect =
+                Rect::from_min_size(pos2(rect.min.x, bar_top), vec2(self.bar_size, HEIGHT));
 
             painter.rect(
-                therm_rect,
+                bar_rect,
                 3.0,
-                bg_color,
+                ui.style().visuals.clone().extreme_bg_color,
                 Stroke::NONE,
                 egui::StrokeKind::Inside,
             );
 
-            let fill_height = therm_rect.height() * (value - self.min) / (self.max - self.min);
+            let fill_height = HEIGHT * (value - self.min) / (self.max - self.min);
             let fill_rect = Rect::from_min_size(
-                Pos2::new(therm_rect.min.x, therm_rect.max.y - fill_height),
-                Vec2::new(therm_rect.width(), fill_height),
+                pos2(bar_rect.min.x, bar_rect.max.y - fill_height),
+                vec2(self.bar_size, fill_height),
             );
 
             painter.rect_filled(fill_rect, 2.0, self.fg_color);
 
-            let center_x = therm_rect.center().x;
+            let cx = bar_rect.center().x;
 
             let label_color = if ui.visuals().dark_mode {
                 GRAY
@@ -126,7 +130,7 @@ impl Bar {
             };
 
             painter.text(
-                Pos2::new(center_x, therm_rect.min.y - LABEL_MARGIN),
+                pos2(cx, bar_rect.min.y - LABEL_MARGIN),
                 Align2::CENTER_BOTTOM,
                 self.max,
                 FontId::proportional(self.label_size),
@@ -134,7 +138,7 @@ impl Bar {
             );
 
             painter.text(
-                Pos2::new(center_x, therm_rect.max.y + LABEL_MARGIN),
+                pos2(cx, bar_rect.max.y + LABEL_MARGIN),
                 Align2::CENTER_TOP,
                 self.min,
                 FontId::proportional(self.label_size),
@@ -144,12 +148,21 @@ impl Bar {
             let text_color = get_text_color(ui);
 
             painter.text(
-                Pos2::new(therm_rect.max.x + VALUE_OFFSET, therm_rect.center().y),
+                pos2(bar_rect.max.x + VALUE_OFFSET, bar_rect.center().y),
                 Align2::LEFT_CENTER,
                 self.text,
                 FontId::proportional(self.font_size),
                 text_color,
             );
+
+            for i in 1..self.ticks + 1 {
+                let t = i as f32 / (self.ticks + 1) as f32;
+                let y = bar_rect.min.y + HEIGHT * t;
+                let diff = bar_rect.width() / 2.0 + 2.0;
+                let tick_start = pos2(bar_rect.center().x - diff, y);
+                let tick_end = pos2(bar_rect.center().x + diff, y);
+                painter.line_segment([tick_start, tick_end], Stroke::new(1.0, label_color));
+            }
         }
 
         response
@@ -201,7 +214,7 @@ impl egui::Widget for Bar {
         let total_width = min_label_width + bar_width + max_label_width;
         let line_height = self.bar_size.max(self.label_size);
         let label_offset = (line_height - self.label_size) / 2.0;
-        let space_to_add = (total_width - text_width) / 2.0;
+        let text_offset = (total_width - text_width).max(0.0) / 2.0;
 
         let desired_size = vec2(total_width, line_height * 2.0 + self.font_size);
         let (rect, response) = ui.allocate_exact_size(desired_size, egui::Sense::hover());
@@ -212,7 +225,7 @@ impl egui::Widget for Bar {
                 .fill(self.fg_color)
                 .desired_height(self.bar_size)
                 .desired_width(bar_width);
-
+            let mut progress_bar_response = None;
             ui.allocate_new_ui(
                 egui::UiBuilder::new().max_rect(rect).layout(*ui.layout()),
                 |ui| {
@@ -220,18 +233,30 @@ impl egui::Widget for Bar {
                         ui.horizontal(|ui| {
                             ui.add_space(label_offset);
                             ui.label(min_text);
-                            ui.add(progress_bar);
+                            progress_bar_response = Some(ui.add(progress_bar));
                             ui.add_space(label_offset);
                             ui.label(max_text);
                         });
 
                         ui.horizontal(|ui| {
-                            ui.add_space(space_to_add.max(0.0));
+                            ui.add_space(text_offset);
                             ui.label(text);
                         });
                     });
                 },
             );
+            if let Some(pb_response) = progress_bar_response {
+                let bar_rect = pb_response.rect;
+                for i in 1..self.ticks + 1 {
+                    let t = i as f32 / (self.ticks + 1) as f32;
+                    let x = bar_rect.left() + bar_rect.width() * t;
+                    let diff = bar_rect.height() / 2.0 + 2.0;
+                    let y1 = bar_rect.center().y - diff;
+                    let y2 = bar_rect.center().y + diff;
+                    ui.painter()
+                        .line_segment([pos2(x, y1), pos2(x, y2)], Stroke::new(1.0, label_color));
+                }
+            }
         }
         response
     }
