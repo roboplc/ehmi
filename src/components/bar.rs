@@ -154,14 +154,17 @@ impl Bar {
                 FontId::proportional(self.font_size),
                 text_color,
             );
-
-            for i in 1..self.ticks + 1 {
-                let t = i as f32 / (self.ticks + 1) as f32;
-                let y = bar_rect.min.y + HEIGHT * t;
+            if self.ticks > 1 {
                 let diff = bar_rect.width() / 2.0 + 2.0;
-                let tick_start = pos2(bar_rect.center().x - diff, y);
-                let tick_end = pos2(bar_rect.center().x + diff, y);
-                painter.line_segment([tick_start, tick_end], Stroke::new(1.0, label_color));
+                let cx = bar_rect.center().x;
+                for i in 1..self.ticks + 1 {
+                    let t = i as f32 / (self.ticks + 1) as f32;
+                    let y = bar_rect.min.y + HEIGHT * t;
+                    painter.line_segment(
+                        [pos2(cx - diff, y), pos2(cx + diff, y)],
+                        Stroke::new(1.0, label_color),
+                    );
+                }
             }
         }
 
@@ -245,16 +248,19 @@ impl egui::Widget for Bar {
                     });
                 },
             );
-            if let Some(pb_response) = progress_bar_response {
-                let bar_rect = pb_response.rect;
-                for i in 1..self.ticks + 1 {
-                    let t = i as f32 / (self.ticks + 1) as f32;
-                    let x = bar_rect.left() + bar_rect.width() * t;
+            if self.ticks > 1 {
+                if let Some(pb_response) = progress_bar_response {
+                    let bar_rect = pb_response.rect;
                     let diff = bar_rect.height() / 2.0 + 2.0;
-                    let y1 = bar_rect.center().y - diff;
-                    let y2 = bar_rect.center().y + diff;
-                    ui.painter()
-                        .line_segment([pos2(x, y1), pos2(x, y2)], Stroke::new(1.0, label_color));
+                    let cy = bar_rect.center().y;
+                    for i in 1..self.ticks + 1 {
+                        let t = i as f32 / (self.ticks + 1) as f32;
+                        let x = bar_rect.left() + bar_rect.width() * t;
+                        ui.painter().line_segment(
+                            [pos2(x, cy - diff), pos2(x, cy + diff)],
+                            Stroke::new(1.0, label_color),
+                        );
+                    }
                 }
             }
         }
