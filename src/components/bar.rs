@@ -35,7 +35,7 @@ impl Bar {
             min: 0.0,
             max: 100.0,
             vertical: None,
-            ticks: 5,
+            ticks: 0,
         }
     }
 
