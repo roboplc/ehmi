@@ -98,6 +98,7 @@ impl eframe::App for MyApp {
                     Bar::new(value)
                         .text(format!("T {:>6.1}°C", value))
                         .vertical(80.)
+                        .ticks(3)
                         .range(-20.0..=80.0),
                 );
                 ui.add(
@@ -105,15 +106,17 @@ impl eframe::App for MyApp {
                         .text(format!("T {:>6.1}°C", value))
                         .vertical(80.)
                         .fg_color(DANGER)
+                        .ticks(0)
                         .bar_size(10.0),
                 );
                 ui.vertical(|ui| {
-                    ui.add(Bar::new(value).text("Hello"));
+                    ui.add(Bar::new(value).text("Hello").ticks(4));
                     ui.add(
                         Bar::new(value)
                             .text("Hello")
                             .fg_color(DANGER)
                             .bar_size(10.0)
+                            .ticks(0)
                             .font_size(40.0)
                             .label_size(20.0)
                             .range(-20.0..=120.0),
@@ -129,12 +132,12 @@ impl eframe::App for MyApp {
                             }
                             ui.add(
                                 ToggleSwitch::new(&mut self.toggle1)
-                                    .label("Hello eframe")
+                                    .label("Relay")
                                     .style(ToggleStyle::Relay),
                             );
                             ui.add(
                                 ToggleSwitch::new(&mut self.toggle1)
-                                    .label("Hello egui")
+                                    .label("Valve")
                                     .style(ToggleStyle::Valve),
                             );
                         });
@@ -179,7 +182,7 @@ impl eframe::App for MyApp {
                 ui.separator();
                 let mut gauge = Gauge::new(value)
                     .range(10.0..=80.0)
-                    .size(200.0)
+                    .size(160.0)
                     .text(format!("modern {:>6.1}", value))
                     .ticks(0)
                     .arrow_length_factor(0.)
