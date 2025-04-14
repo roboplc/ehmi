@@ -94,7 +94,7 @@ impl Gauge {
         self
     }
 
-    /// Set the number of the ticks, number below 2 disables the ticks
+    /// Set the number of the ticks, 0 disables the ticks
     pub fn ticks(mut self, n: usize) -> Self {
         self.ticks = n;
         self
@@ -107,7 +107,7 @@ impl Gauge {
     }
 
     fn gauge_width(&self) -> f32 {
-        if self.ticks > 1 {
+        if self.ticks > 0 {
             self.size - self.text_clearance() * 2.0
         } else {
             self.size
@@ -146,7 +146,7 @@ impl Gauge {
     }
 
     fn paint(&mut self, ui: &mut Ui, outer_rect: Rect, value: f64) {
-        let rect = if self.ticks > 1 {
+        let rect = if self.ticks > 0 {
             outer_rect.shrink(self.text_clearance())
         } else {
             outer_rect
@@ -170,7 +170,7 @@ impl Gauge {
             self.paint_point(ui, rect, max_angle);
         }
 
-        if self.ticks >= 2 {
+        if self.ticks > 0 {
             self.paint_ticks(ui, rect);
         }
 
@@ -228,14 +228,21 @@ impl Gauge {
         let font_size = self.gauge_width() / 15.0;
 
         for i in 0..self.ticks {
-            if i == self.ticks - 1 && self.angle_range.end() - self.angle_range.start() >= 360 {
+            if self.ticks != 1
+                && i == self.ticks - 1
+                && self.angle_range.end() - self.angle_range.start() >= 360
+            {
                 continue;
             }
             #[allow(clippy::cast_precision_loss)]
-            let tick_value = *self.value_range.start() + step * i as f64;
+            let tick_value = if self.ticks == 1 {
+                *self.value_range.start() + value_range / 2.0
+            } else {
+                *self.value_range.start() + step * i as f64
+            };
             let angle = self.value_to_angle(tick_value);
 
-            if self.ticks >= 2 {
+            if self.ticks > 0 {
                 let tick_inner = position_from_angle(rect, angle, self.radius() - self.tick_size);
                 let tick_outer = position_from_angle(rect, angle, self.radius() + self.tick_size);
                 ui.painter()

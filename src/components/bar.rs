@@ -82,7 +82,7 @@ impl Bar {
         self
     }
 
-    /// Set the number of the ticks, number below 2 disables the ticks
+    /// Set the number of the ticks, 0 disables the ticks (default)
     pub fn ticks(mut self, n: usize) -> Self {
         self.ticks = n;
         self
@@ -154,7 +154,7 @@ impl Bar {
                 FontId::proportional(self.font_size),
                 text_color,
             );
-            if self.ticks > 1 {
+            if self.ticks > 0 {
                 let diff = bar_rect.width() / 2.0 + 2.0;
                 let cx = bar_rect.center().x;
                 for i in 1..self.ticks + 1 {
@@ -248,7 +248,7 @@ impl egui::Widget for Bar {
                     });
                 },
             );
-            if self.ticks > 1 {
+            if self.ticks > 0 {
                 if let Some(pb_response) = progress_bar_response {
                     let bar_rect = pb_response.rect;
                     let diff = bar_rect.height() / 2.0 + 2.0;
