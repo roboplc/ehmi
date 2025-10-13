@@ -1,7 +1,7 @@
 [package]
 name = "ehmi"
-version = "0.31.2"
-edition = "2021"
+version = "0.32.0"
+edition = "2024"
 authors = ["Serhij S. <div@altertech.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/roboplc/ehmi"
@@ -10,8 +10,8 @@ readme = "README.md"
 keywords = ["plc", "scada", "hmi", "egui", "ui"]
 
 [dependencies]
-egui = "0.31"
-eframe = "0.31"
+egui = "0.32"
+eframe = "0.32"
 
 [dev-dependencies]
 atomic-timer = "0.2.2"

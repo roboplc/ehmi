@@ -1,8 +1,8 @@
 use core::fmt;
 
-use egui::{pos2, vec2, Align2, Color32, FontId, Stroke, StrokeKind, Ui, Vec2};
+use egui::{Align2, Color32, FontId, Stroke, StrokeKind, Ui, Vec2, pos2, vec2};
 
-use crate::colors::{get_text_color, GRAY, SUCCESS, WARN};
+use crate::colors::{GRAY, SUCCESS, WARN, get_text_color};
 
 /// Toggle switch style
 #[derive(Clone, Copy, Debug)]

@@ -1,9 +1,9 @@
 use core::fmt;
 use std::ops::RangeInclusive;
 
-use egui::{pos2, vec2, Align2, Color32, FontId, Rect, Response, RichText, Stroke, Ui};
+use egui::{Align2, Color32, FontId, Rect, Response, RichText, Stroke, Ui, pos2, vec2};
 
-use crate::colors::{get_text_color, GRAY, GRAY_DARK, SUCCESS};
+use crate::colors::{GRAY, GRAY_DARK, SUCCESS, get_text_color};
 
 /// Horizontal or vertical bar component
 pub struct Bar {
@@ -229,7 +229,7 @@ impl egui::Widget for Bar {
                 .desired_height(self.bar_size)
                 .desired_width(bar_width);
             let mut progress_bar_response = None;
-            ui.allocate_new_ui(
+            ui.scope_builder(
                 egui::UiBuilder::new().max_rect(rect).layout(*ui.layout()),
                 |ui| {
                     ui.vertical(|ui| {

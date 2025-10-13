@@ -1,9 +1,9 @@
 use egui::{
-    epaint::PathShape, vec2, Align2, Color32, FontId, Pos2, Rect, Response, Sense, Shape, Stroke,
-    Ui,
+    Align2, Color32, FontId, Pos2, Rect, Response, Sense, Shape, Stroke, Ui, epaint::PathShape,
+    vec2,
 };
 
-use crate::colors::{get_text_color, GRAY, GRAY_DARK, SUCCESS};
+use crate::colors::{GRAY, GRAY_DARK, SUCCESS, get_text_color};
 use core::fmt;
 use std::f32::consts::PI;
 use std::ops::RangeInclusive;

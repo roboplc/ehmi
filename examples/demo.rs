@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use atomic_timer::AtomicTimer;
-use egui::{vec2, CentralPanel, Color32, Slider, Visuals};
+use egui::{CentralPanel, Color32, Slider, Visuals, vec2};
 use ehmi::{Bar, Gauge, ToggleStyle, ToggleSwitch};
 
 const DANGER: Color32 = Color32::RED;
