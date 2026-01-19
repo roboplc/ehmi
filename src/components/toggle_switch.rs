@@ -81,7 +81,7 @@ impl egui::Widget for ToggleSwitch<'_> {
         } * ui.spacing().interact_size.y;
 
         let (label_size, label_spacing) = if let Some(ref label_text) = self.label {
-            let text_size = ui.fonts(|f| {
+            let text_size = ui.fonts_mut(|f| {
                 let galley = f.layout_no_wrap(
                     label_text.to_string(),
                     FontId::proportional(self.font_size),
